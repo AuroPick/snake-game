@@ -4,7 +4,7 @@ module.exports = {
     node: true,
   },
   extends: [
-    'eslint:recommend',
+    'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
     'airbnb-base',
     'plugin:prettier/recommended',
@@ -19,8 +19,17 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'prettier', 'import'],
   rules: {
-    'prettier/prettier': 'error',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    'prettier/prettier': [
+      'error',
+      {
+        endOfLine: 'auto',
+      },
+    ],
     'import/extensions': 'off',
+    'import/prefer-default-export': 'off',
     'no-console': 'off',
+    'no-underscore-dangle': 'off',
   },
+  ignorePatterns: ['dist'],
 };
