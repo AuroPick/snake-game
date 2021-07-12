@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
-import { Card, Guideline } from './components';
+import { useAnimation } from 'framer-motion';
+import { Card, Guideline, Game } from './components';
+
+document.body.className = 'bg-secondary';
 
 export const App: React.FC = () => {
   const [ShowCard, setShowCard] = useState(true);
   const clickHandler = () => setShowCard(false);
 
+  const animController = useAnimation();
+
   if (ShowCard)
     return (
-      <div className="bg-secondary flex w-screen h-screen justify-center items-center overflow-hidden">
-        <Card>
-          <Guideline onClick={clickHandler} />
+      <div className="flex justify-center items-center min-h-screen">
+        <Card animController={animController}>
+          <Guideline onClick={clickHandler} animController={animController} />
         </Card>
       </div>
     );
 
-  return <div>xd</div>;
+  return <Game />;
 };

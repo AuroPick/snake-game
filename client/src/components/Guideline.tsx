@@ -6,16 +6,16 @@ import {
   ArrowNarrowUpIcon,
 } from '@heroicons/react/solid';
 import Lottie from 'react-lottie-segments';
-import { motion, useAnimation } from 'framer-motion';
+import { motion, AnimationControls } from 'framer-motion';
 import snake from '../animations/snake.json';
 
 interface GuidelineProps {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
+  animController: AnimationControls;
 }
 
-export const Guideline: React.FC<GuidelineProps> = ({ onClick }) => {
+export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController }) => {
   const [, setTrigger] = useState(false);
-  const animController = useAnimation();
 
   const defaultOptions = {
     loop: true,
@@ -32,8 +32,8 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick }) => {
 
   return (
     <>
-      <h3 className="text-5xl text-gray-300 font-bold">How To Play</h3>
-      <div className="flex flex-wrap justify-between w-full my-32">
+      <h3 className="text-3xl lg:text-5xl text-gray-300 font-bold">How To Play</h3>
+      <div className="flex flex-wrap justify-center lg:justify-between w-full my-32">
         <div className="flex flex-col items-center w-52 mx-5">
           {/*
             // @ts-ignore */}
@@ -89,15 +89,10 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick }) => {
       </div>
       <div>
         <motion.button
-          animate={animController}
           onClick={async e => {
             await animController.start({
-              paddingTop: '100vh',
-              paddingBottom: '100vh',
-              paddingRight: '100vw',
-              paddingLeft: '100vw',
-              borderRadius: '100%',
-              transition: { type: 'tween', ease: 'easeInOut' },
+              y: 100,
+              opacity: 0,
             });
             onClick(e);
           }}
