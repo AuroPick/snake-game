@@ -4,19 +4,21 @@ import { AnimationControls, motion } from 'framer-motion';
 interface CardProps {
   children: React.ReactNode;
   animController: AnimationControls;
+  className?: string;
+  scaleAnimation?: boolean;
 }
 
-export const Card: React.FC<CardProps> = ({ children, animController }) => {
+export const Card: React.FC<CardProps> = ({ children, animController, className, scaleAnimation }) => {
   useEffect(() => {
-    animController.start({ scale: 1 });
-  }, [animController]);
+    if (scaleAnimation) animController.start({ scale: 1 });
+  }, [animController, scaleAnimation]);
 
   return (
     <motion.div
-      initial={{ scale: 0 }}
+      initial={scaleAnimation && { scale: 0 }}
       animate={animController}
       transition={{ type: 'spring', stiffness: 85 }}
-      className="p-6 m-5 flex bg-primary rounded-xl shadow-md justify-between flex-col items-center"
+      className={className}
     >
       {children}
     </motion.div>
