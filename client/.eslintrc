@@ -27,6 +27,8 @@
   },
   "rules": {
     "@typescript-eslint/ban-ts-comment": "off",
+    "consistent-return": "off",
+    "eqeqeq": "off",
     "linebreak-style": "off",
     "react/jsx-fragments": "off",
     "react/prop-types": "off",
@@ -49,7 +51,9 @@
       }
     ],
     "import/prefer-default-export": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "no-restricted-syntax": "off",
+    "no-nested-ternary": "off"
   },
   "settings": {
     "react": {
