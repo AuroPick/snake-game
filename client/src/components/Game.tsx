@@ -117,7 +117,10 @@ export const Game: React.FC = () => {
     if (newSnake[0][0] === apple[0] && newSnake[0][1] === apple[1]) {
       setScore(prevState => prevState + 1);
       eatFood.play();
-      setSpeed(prevState => prevState && prevState - 1);
+      setSpeed(prevState => {
+        if (prevState && prevState > 50) return prevState - 1;
+        return prevState;
+      });
       let newApple = createApple();
       while (checkCollision(newApple, newSnake)) {
         newApple = createApple();
