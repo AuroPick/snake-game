@@ -3,7 +3,7 @@ import { Leaderboard } from '../models';
 
 export const getLeaderboard = async (req: Request, res: Response) => {
   try {
-    const leaderboard = await Leaderboard.find().sort({ points: -1 }).exec();
+    const leaderboard = await Leaderboard.find().sort({ score: -1 }).exec();
 
     return res.status(200).json({ leaderboard, hasError: false });
   } catch (error) {
@@ -13,17 +13,17 @@ export const getLeaderboard = async (req: Request, res: Response) => {
 
 export const postLeaderboard = async (req: Request, res: Response) => {
   try {
-    const { username, points }: { username: string; points: number } = req.body;
+    const { username, score }: { username: string; score: number } = req.body;
 
     const isExist = await Leaderboard.findOne({ username }).exec();
 
     if (isExist) {
-      const updatedLeaderboard = await Leaderboard.findByIdAndUpdate(isExist._id, { points }, { new: true });
+      const updatedLeaderboard = await Leaderboard.findByIdAndUpdate(isExist._id, { score }, { new: true }).exec();
 
       return res.status(200).json({ updatedLeaderboard, hasError: false });
     }
 
-    const newLeaderboard = new Leaderboard({ username, points });
+    const newLeaderboard = new Leaderboard({ username, score });
 
     const savedLeaderboard = await newLeaderboard.save();
 

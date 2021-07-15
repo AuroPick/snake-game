@@ -2,7 +2,7 @@ import { Schema, Document, model } from 'mongoose';
 
 interface leaderboardSchemaInterface extends Document {
   username: string;
-  points: number;
+  score: number;
 }
 
 const leaderboardSchema = new Schema({
@@ -10,7 +10,7 @@ const leaderboardSchema = new Schema({
     type: String,
     required: true,
   },
-  points: {
+  score: {
     type: Number,
     required: true,
   },
