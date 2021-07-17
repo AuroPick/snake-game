@@ -5,14 +5,18 @@ import EatFood from '../assets/sounds/eatFood.mp3';
 import GameOver from '../assets/sounds/gameOver.mp3';
 import Jump from '../assets/sounds/jump.mp3';
 import ThemeMusic from '../assets/sounds/themeMusic.mp3';
+import Boost from '../assets/sounds/boost.mp3';
 
 const eatFood = new Audio(EatFood);
 const gameOver = new Audio(GameOver);
 const jump = new Audio(Jump);
 const themeMusic = new Audio(ThemeMusic);
+const boost = new Audio(Boost);
 
 themeMusic.loop = true;
 themeMusic.volume = 0.15;
+
+boost.loop = true;
 
 let interval: NodeJS.Timeout;
 
@@ -59,6 +63,7 @@ export const Game: React.FC = () => {
   const [direction, setDirection] = useState([1, 0]);
   const [speed, setSpeed] = useState<number | null>(null);
   const [isDead, setIsDead] = useState(false);
+  const [isBoosting, setIsBoosting] = useState(false);
 
   const canvasAnimation = useAnimation();
 
@@ -67,9 +72,9 @@ export const Game: React.FC = () => {
 
   const createApple = () => apple.map((_a, i) => Math.floor(Math.random() * (CANVAS_SIZE[i] / SCALE)));
 
-  const moveSnake = ({ keyCode }: { keyCode: number }) => {
+  const moveSnake = ({ code }: { code: string }) => {
     if (
-      keyCode === 37 &&
+      code === 'ArrowLeft' &&
       JSON.stringify(direction) != JSON.stringify([1, 0]) &&
       JSON.stringify(direction) != JSON.stringify([-1, 0])
     ) {
@@ -77,7 +82,7 @@ export const Game: React.FC = () => {
       setDirection([-1, 0]);
     }
     if (
-      keyCode === 38 &&
+      code === 'ArrowUp' &&
       JSON.stringify(direction) != JSON.stringify([0, 1]) &&
       JSON.stringify(direction) != JSON.stringify([0, -1])
     ) {
@@ -85,7 +90,7 @@ export const Game: React.FC = () => {
       setDirection([0, -1]);
     }
     if (
-      keyCode === 39 &&
+      code === 'ArrowRight' &&
       JSON.stringify(direction) != JSON.stringify([-1, 0]) &&
       JSON.stringify(direction) != JSON.stringify([1, 0])
     ) {
@@ -93,12 +98,28 @@ export const Game: React.FC = () => {
       setDirection([1, 0]);
     }
     if (
-      keyCode === 40 &&
+      code === 'ArrowDown' &&
       JSON.stringify(direction) != JSON.stringify([0, -1]) &&
       JSON.stringify(direction) != JSON.stringify([0, 1])
     ) {
       jump.play();
       setDirection([0, 1]);
+    }
+  };
+
+  const speedBoost = (e: React.KeyboardEvent<HTMLCanvasElement>) => {
+    if (e.type === 'keydown') {
+      setSpeed(prevState => prevState && prevState / 2);
+      setIsBoosting(true);
+      boost.play();
+      document.body.className = 'bg-green-700 font-sans';
+    }
+    if (e.type === 'keyup') {
+      setSpeed(prevState => prevState && prevState * 2);
+      setIsBoosting(false);
+      boost.pause();
+      boost.currentTime = 0;
+      document.body.className = 'bg-secondary font-sans';
     }
   };
 
@@ -118,6 +139,8 @@ export const Game: React.FC = () => {
       setScore(prevState => prevState + 1);
       eatFood.play();
       setSpeed(prevState => {
+        if (prevState && prevState <= 25) return prevState;
+        if (prevState && isBoosting) return prevState - 0.5;
         if (prevState && prevState > 50) return prevState - 1;
         return prevState;
       });
@@ -148,21 +171,24 @@ export const Game: React.FC = () => {
 
   const endGame = async () => {
     setSpeed(null);
-    setIsDead(true);
     themeMusic.pause();
     themeMusic.currentTime = 0;
+    boost.pause();
+    boost.currentTime = 0;
     gameOver.play();
     await canvasAnimation.start({
       y: 200,
       rotateZ: 10,
       opacity: 0,
+      borderColor: '#ff0000',
       transition: { duration: 1 },
     });
     if (canvasRef.current) canvasRef.current.style.display = 'none';
+    setIsDead(true);
   };
 
   const update = () => {
-    const snakeCopy = JSON.parse(JSON.stringify(snake));
+    const snakeCopy = [...snake];
     const newSnakeHead = [snakeCopy[0][0] + direction[0], snakeCopy[0][1] + direction[1]];
     snakeCopy.unshift(newSnakeHead);
     if (checkCollision(newSnakeHead)) endGame();
@@ -230,8 +256,14 @@ export const Game: React.FC = () => {
         ref={canvasRef}
         width={`${CANVAS_SIZE[0]}px`}
         height={`${CANVAS_SIZE[1]}px`}
-        className="border-2 border-gray-500 focus:outline-none bg-primary"
-        onKeyDown={e => moveSnake(e)}
+        initial={{ borderColor: '#6b7280' }}
+        className="border-2 focus:outline-none bg-primary"
+        onKeyDown={e => {
+          if (e.repeat) return;
+          if (e.code === 'Space') return speedBoost(e);
+          moveSnake(e);
+        }}
+        onKeyUp={e => e.code === 'Space' && speedBoost(e)}
       />
     </div>
   );

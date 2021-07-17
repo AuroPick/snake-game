@@ -8,6 +8,8 @@ import {
 import Lottie from 'react-lottie-segments';
 import { motion, AnimationControls } from 'framer-motion';
 import snake from '../animations/snake.json';
+import speedBoost from '../animations/speedBoost.json';
+import { ReactComponent as Spacebar } from '../assets/icons/space-bar.svg';
 
 interface GuidelineProps {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -24,6 +26,12 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController })
     rendererSettings: {
       preserveAspectRatio: 'xMidYMid slice',
     },
+  };
+
+  const speedBoostOptions = {
+    loop: true,
+    autoplay: false,
+    animationData: speedBoost,
   };
 
   useEffect(() => {
@@ -74,8 +82,6 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController })
           <p className="text-center text-gray-200 mt-3">Press up arrow key to turn up</p>
         </div>
         <div className="flex flex-col items-center w-52 mx-5">
-          {/*
-            // @ts-ignore */}
           <Lottie
             width={200}
             className="w-8"
@@ -86,31 +92,34 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController })
           <ArrowNarrowRightIcon className="h-16 text-gray-400" />
           <p className="text-center text-gray-200 mt-3">Press right arrow key to turn right</p>
         </div>
+        <div className="flex flex-col items-center w-52 mx-5">
+          <Lottie width={100} options={speedBoostOptions} style={{ marginLeft: '2.8rem' }} />
+          <Spacebar width={100} style={{ color: 'rgb(156, 163, 175)' }} />
+          <p className="text-center text-gray-200 mt-3">Hold down spacebar to increase speed</p>
+        </div>
       </div>
-      <div>
-        <motion.button
-          onClick={async e => {
-            await animController.start({
-              y: 100,
-              opacity: 0,
-            });
-            onClick(e);
-          }}
-          style={{ willChange: 'transform' }}
-          whileHover={{
-            scale: 1.1,
-            transition: {
-              type: 'tween',
-              ease: 'easeInOut',
-            },
-          }}
-          // @ts-ignore
-          type="button"
-          className="bg-gray-400 px-10 py-3 text-gray-900 font-bold rounded"
-        >
-          START
-        </motion.button>
-      </div>
+      <motion.button
+        onClick={async e => {
+          await animController.start({
+            y: 100,
+            opacity: 0,
+          });
+          onClick(e);
+        }}
+        style={{ willChange: 'transform' }}
+        whileHover={{
+          scale: 1.1,
+          transition: {
+            type: 'tween',
+            ease: 'easeInOut',
+          },
+        }}
+        // @ts-ignore
+        type="button"
+        className="bg-gray-400 px-10 py-3 text-gray-900 font-bold rounded"
+      >
+        START
+      </motion.button>
     </>
   );
 };
