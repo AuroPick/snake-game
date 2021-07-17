@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "start:dev": "nodemon",
-    "start:prod": "node -r ts-node/register/transpile-only ./dist/index.js",
+    "start:prod": "node ./dist/index.js",
     "build": "tsc"
   },
   "devDependencies": {
