@@ -3,14 +3,14 @@ import { AnimationControls, motion } from 'framer-motion';
 
 interface CardProps {
   children: React.ReactNode;
-  animController: AnimationControls;
+  animController?: AnimationControls;
   className?: string;
   scaleAnimation?: boolean;
 }
 
 export const Card: React.FC<CardProps> = ({ children, animController, className, scaleAnimation }) => {
   useEffect(() => {
-    if (scaleAnimation) animController.start({ scale: 1 });
+    if (scaleAnimation && animController) animController.start({ scale: 1 });
   }, [animController, scaleAnimation]);
 
   return (
