@@ -18,9 +18,12 @@ export const postLeaderboard = async (req: Request, res: Response) => {
     const isExist = await Leaderboard.findOne({ username }).exec();
 
     if (isExist) {
-      const updatedLeaderboard = await Leaderboard.findByIdAndUpdate(isExist._id, { score }, { new: true }).exec();
+      if (isExist.score < score) {
+        const updatedLeaderboard = await Leaderboard.findByIdAndUpdate(isExist._id, { score }, { new: true }).exec();
 
-      return res.status(200).json({ updatedLeaderboard, hasError: false });
+        return res.status(200).json({ updatedLeaderboard, hasError: false });
+      }
+      return res.status(200).json({ hasError: true, error: { message: 'Your score is lower than before' } });
     }
 
     const newLeaderboard = new Leaderboard({ username, score });
