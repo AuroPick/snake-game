@@ -7,6 +7,10 @@ import Jump from '../assets/sounds/jump.mp3';
 import ThemeMusic from '../assets/sounds/themeMusic.mp3';
 import Boost from '../assets/sounds/boost.mp3';
 
+interface GameProps {
+  onGameEnd: (score: number) => void;
+}
+
 const eatFood = new Audio(EatFood);
 const gameOver = new Audio(GameOver);
 const jump = new Audio(Jump);
@@ -55,15 +59,15 @@ snakeHead.src = 'https://pixelartmaker-data-78746291193.nyc3.digitaloceanspaces.
 const snakeTail = new Image();
 snakeTail.src = 'https://i.hizliresim.com/7zrgugd.png';
 
-export const Game: React.FC = () => {
+export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
   const [countdown, setCountdown] = useState(3);
   const [score, setScore] = useState(0);
   const [snake, setSnake] = useState(SNAKE_START);
   const [apple, setApple] = useState(APPLE_START);
   const [direction, setDirection] = useState([1, 0]);
   const [speed, setSpeed] = useState<number | null>(null);
-  const [isDead, setIsDead] = useState(false);
   const [isBoosting, setIsBoosting] = useState(false);
+  const [focus, setFocus] = useState(false);
 
   const canvasAnimation = useAnimation();
 
@@ -165,11 +169,12 @@ export const Game: React.FC = () => {
     setApple(APPLE_START);
     setDirection([1, 0]);
     setSpeed(100);
-    setIsDead(false);
+    setFocus(true);
     themeMusic.play();
   };
 
   const endGame = async () => {
+    setFocus(false);
     setSpeed(null);
     themeMusic.pause();
     themeMusic.currentTime = 0;
@@ -181,10 +186,11 @@ export const Game: React.FC = () => {
       rotateZ: 10,
       opacity: 0,
       borderColor: '#ff0000',
-      transition: { duration: 1 },
+      transition: { duration: 2, ease: 'easeInOut' },
     });
     if (canvasRef.current) canvasRef.current.style.display = 'none';
-    setIsDead(true);
+    document.body.className = 'bg-secondary font-sans';
+    onGameEnd(score);
   };
 
   const update = () => {
@@ -226,7 +232,7 @@ export const Game: React.FC = () => {
       });
       context.drawImage(appleIcon, apple[0], apple[1], 1, 1);
     }
-  }, [snake, apple, isDead]);
+  }, [snake, apple]);
 
   return (
     <div className="flex flex-col h-screen items-center relative">
@@ -252,18 +258,20 @@ export const Game: React.FC = () => {
       </div>
       <motion.canvas
         animate={canvasAnimation}
-        tabIndex={0}
+        tabIndex={focus ? 0 : -1}
         ref={canvasRef}
         width={`${CANVAS_SIZE[0]}px`}
         height={`${CANVAS_SIZE[1]}px`}
         initial={{ borderColor: '#6b7280' }}
         className="border-2 focus:outline-none bg-primary"
         onKeyDown={e => {
-          if (e.repeat) return;
-          if (e.code === 'Space') return speedBoost(e);
-          moveSnake(e);
+          if (focus) {
+            if (e.repeat) return;
+            if (e.code === 'Space') return speedBoost(e);
+            moveSnake(e);
+          }
         }}
-        onKeyUp={e => e.code === 'Space' && speedBoost(e)}
+        onKeyUp={e => focus && e.code === 'Space' && speedBoost(e)}
       />
     </div>
   );

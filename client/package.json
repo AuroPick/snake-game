@@ -12,11 +12,13 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.14",
     "@types/react-dom": "^17.0.0",
+    "axios": "^0.21.1",
     "framer-motion": "^4.1.17",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-lottie-segments": "^1.4.9",
     "react-scripts": "4.0.3",
+    "react-toast-notifications": "^2.5.1",
     "typescript": "^4.3.5",
     "web-vitals": "^1.0.1"
   },
