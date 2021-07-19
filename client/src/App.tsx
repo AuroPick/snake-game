@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAnimation } from 'framer-motion';
 import { Card, Guideline, Game, Result } from './components';
+import { getLeaderboard } from './api';
 
 document.body.className = 'bg-secondary font-sans';
 
@@ -8,6 +9,10 @@ export const App: React.FC = () => {
   const [showStartCard, setShowStartCard] = useState(true);
   const [showResultCard, setShowResultCard] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+
+  useEffect(() => {
+    getLeaderboard();
+  }, []);
 
   const startCardClickHandler = () => setShowStartCard(false);
   const resultCardClickHandler = () => {
