@@ -58,7 +58,7 @@ export const Result: React.FC<ResultProps> = ({ score, animController, onClick }
   return (
     <>
       <h3 className="text-3xl lg:text-5xl text-gray-300 font-bold">Game Over</h3>
-      <div className="flex flex-col justify-center items-center mt-8 overflow-y-auto bg-gray-900 rounded-xl py-6 px-10 max-h-56">
+      <div className="flex flex-col mx-auto items-center mt-8 overflow-y-auto bg-gray-900 rounded-xl py-6 px-10 max-h-56">
         <h4 className="text-l lg:text-2xl text-gray-300 font-semibold mb-3">Leaderboard</h4>
         <div className="w-44 lg:w-96">
           <div className="flex justify-between items-center">
