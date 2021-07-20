@@ -119,7 +119,11 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
       document.body.className = 'bg-green-700 font-sans';
     }
     if (e.type === 'keyup') {
-      setSpeed(prevState => prevState && prevState * 2);
+      setSpeed(prevState => {
+        console.log(prevState);
+        if (prevState && prevState >= 100) return 100;
+        return prevState && prevState * 2;
+      });
       setIsBoosting(false);
       boost.pause();
       boost.currentTime = 0;
