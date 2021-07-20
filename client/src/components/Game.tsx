@@ -142,6 +142,12 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
     if (newSnake[0][0] === apple[0] && newSnake[0][1] === apple[1]) {
       setScore(prevState => prevState + 1);
       eatFood.play();
+      canvasAnimation.start({
+        x: [2, -2, 0],
+        transition: {
+          duration: 0.2,
+        },
+      });
       setSpeed(prevState => {
         if (prevState && prevState <= 25) return prevState;
         if (prevState && isBoosting) return prevState - 0.5;
