@@ -293,8 +293,7 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
           scale: 0,
         }}
         transition={{ duration: 4 }}
-        className="text-gray-300 text-6xl"
-        style={{ position: 'absolute', top: '50%', left: '50%', userSelect: 'none' }}
+        className="text-gray-300 text-6xl transform translate-x-1/2 mx-auto top-1/2 absolute select-none"
       >
         {countdown}
       </motion.div>
