@@ -33,7 +33,7 @@ const CANVAS_SIZE =
     ? [1200, 600]
     : window.innerWidth > 767 && window.innerHeight > 431
     ? [690, 390]
-    : [900, 600];
+    : [window.innerWidth - 50, window.innerHeight - 200];
 const SNAKE_START = [
   [9, 8],
   [8, 8],
@@ -48,7 +48,7 @@ const SCALE =
     ? 20
     : window.innerWidth > 767 && window.innerHeight > 431
     ? 15
-    : 18;
+    : 10;
 
 const appleIcon = new Image();
 appleIcon.src = 'https://cdn.gamedevmarket.net/wp-content/uploads/20200305090324/b89792347c16340b1d1fffcac31f850b.png';
@@ -68,6 +68,7 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
   const [speed, setSpeed] = useState<number | null>(null);
   const [isBoosting, setIsBoosting] = useState(false);
   const [focus, setFocus] = useState(false);
+  const [showArrows, setShowArrows] = useState(false);
 
   const canvasAnimation = useAnimation();
 
@@ -181,11 +182,14 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
     setSpeed(100);
     setFocus(true);
     themeMusic.play();
+
+    if (window.innerWidth < 768) setShowArrows(true);
   };
 
   const endGame = async () => {
     setFocus(false);
     setSpeed(null);
+    if (showArrows) setShowArrows(false);
     themeMusic.pause();
     themeMusic.currentTime = 0;
     boost.pause();
@@ -246,6 +250,38 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
 
   return (
     <div className="flex flex-col h-screen items-center relative">
+      {showArrows && (
+        <div className="fixed w-screen h-screen top-0 left-0 flex flex-wrap justify-around opacity-100 select-none">
+          <div
+            className="border-dashed border-4 border-white arrow flex content-center justify-center self-center items-center font-black text-white duration-500 opacity-10 rounded-md hover:opacity-100"
+            onClick={() => moveSnake({ code: 'ArrowUp' })}
+            role="button"
+          >
+            &#8593;
+          </div>
+          <div
+            className="border-dashed border-4 border-white arrow flex content-center justify-center self-center items-center font-black text-white duration-500 opacity-10 rounded-md hover:opacity-100"
+            onClick={() => moveSnake({ code: 'ArrowRight' })}
+            role="button"
+          >
+            &#8594;
+          </div>
+          <div
+            className="border-dashed border-4 border-white arrow flex content-center justify-center self-center items-center font-black text-white duration-500 opacity-10 rounded-md hover:opacity-100"
+            onClick={() => moveSnake({ code: 'ArrowLeft' })}
+            role="button"
+          >
+            &#8592;
+          </div>
+          <div
+            className="border-dashed border-4 border-white arrow flex content-center justify-center self-center items-center font-black text-white duration-500 opacity-10 rounded-md hover:opacity-100"
+            onClick={() => moveSnake({ code: 'ArrowDown' })}
+            role="button"
+          >
+            &#8595;
+          </div>
+        </div>
+      )}
       <motion.div
         ref={counterRef}
         animate={{
