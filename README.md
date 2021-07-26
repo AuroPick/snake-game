@@ -15,7 +15,9 @@
 :heavy_check_mark: Save the score  
 :heavy_check_mark: See the leaderboard  
 :heavy_check_mark: Animations  
-:heavy_check_mark: Sounds 
+:heavy_check_mark: Sounds  
+:heavy_check_mark: Buttons for mobile  
+:heavy_check_mark: Mutation skill: Eat golden apple to disable all collisions 
 
 ## Stack
 - Typescript [:link:](https://www.typescriptlang.org)
