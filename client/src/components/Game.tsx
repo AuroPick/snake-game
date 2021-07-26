@@ -23,10 +23,11 @@ themeMusic.volume = 0.15;
 boost.loop = true;
 
 let interval: NodeJS.Timeout;
+let specialAppleInterval: NodeJS.Timeout;
 
 const CANVAS_SIZE =
-  window.innerWidth > 1919 && window.innerHeight > 1079
-    ? [1920, 900]
+  window.innerWidth > 1919 && window.innerHeight > 900
+    ? [1600, 800]
     : window.innerWidth > 1536 && window.innerHeight > 864
     ? [1500, 720]
     : window.innerWidth > 1279 && window.innerHeight > 719
@@ -40,10 +41,10 @@ const SNAKE_START = [
 ];
 const APPLE_START = [10, 20];
 const SCALE =
-  window.innerWidth > 1919 && window.innerHeight > 1079
-    ? 30
-    : window.innerWidth > 1536 && window.innerHeight > 864
+  window.innerWidth > 1919 && window.innerHeight > 900
     ? 25
+    : window.innerWidth > 1536 && window.innerHeight > 864
+    ? 22
     : window.innerWidth > 1279 && window.innerHeight > 719
     ? 20
     : window.innerWidth > 767 && window.innerHeight > 431
@@ -53,14 +54,24 @@ const SCALE =
 const appleIcon = new Image();
 appleIcon.src = 'https://cdn.gamedevmarket.net/wp-content/uploads/20200305090324/b89792347c16340b1d1fffcac31f850b.png';
 
+const goldenAppleIcon = new Image();
+goldenAppleIcon.src = 'https://i.hizliresim.com/993i2le.png';
+
 const snakeHead = new Image();
 snakeHead.src = 'https://pixelartmaker-data-78746291193.nyc3.digitaloceanspaces.com/image/2ff5966906c4cb6.png';
+
+const goldenSnakeHead = new Image();
+goldenSnakeHead.src = 'https://i.hizliresim.com/6vcp9lx.png';
 
 const snakeTail = new Image();
 snakeTail.src = 'https://i.hizliresim.com/7zrgugd.png';
 
+const goldenSnakeTail = new Image();
+goldenSnakeTail.src = 'https://i.hizliresim.com/f4q0gr3.png';
+
 export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
   const [countdown, setCountdown] = useState(3);
+  const [specialAppleCountdown, setSpecialAppleCountdown] = useState(10);
   const [score, setScore] = useState(0);
   const [snake, setSnake] = useState(SNAKE_START);
   const [apple, setApple] = useState(APPLE_START);
@@ -69,13 +80,18 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
   const [isBoosting, setIsBoosting] = useState(false);
   const [focus, setFocus] = useState(false);
   const [showArrows, setShowArrows] = useState(false);
+  const [hasSpecialApple, setHasSpecialApple] = useState(false);
+  const [specialApple, setSpecialApple] = useState<number[] | null[]>([null, null]);
 
   const canvasAnimation = useAnimation();
 
   const counterRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const specialAppleCountdownRef = useRef<HTMLDivElement>(null);
 
   const createApple = () => apple.map((_a, i) => Math.floor(Math.random() * (CANVAS_SIZE[i] / SCALE)));
+
+  const createSpecialApple = () => specialApple.map((_a, i) => Math.floor(Math.random() * (CANVAS_SIZE[i] / SCALE)));
 
   const moveSnake = ({ code }: { code: string }) => {
     if (
@@ -117,7 +133,7 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
       setSpeed(prevState => prevState && prevState / 2);
       setIsBoosting(true);
       boost.play();
-      document.body.className = 'bg-green-700 font-sans';
+      if (!hasSpecialApple) document.body.className = 'bg-green-700 font-sans';
     }
     if (e.type === 'keyup') {
       setSpeed(prevState => {
@@ -127,22 +143,46 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
       setIsBoosting(false);
       boost.pause();
       boost.currentTime = 0;
-      document.body.className = 'bg-secondary font-sans';
+      if (!hasSpecialApple) document.body.className = 'bg-secondary font-sans';
     }
   };
 
-  const checkCollision = (piece: number[], snk: typeof snake = snake) => {
-    if (piece[0] * SCALE >= CANVAS_SIZE[0] || piece[0] < 0 || piece[1] * SCALE >= CANVAS_SIZE[1] || piece[1] < 0)
-      return true;
-
-    for (const segment of snk) {
-      if (piece[0] === segment[0] && piece[1] === segment[1]) return true;
+  const checkCollision = (piece: number[] | null, snk: typeof snake = snake, goldenApple?: typeof specialApple) => {
+    if (goldenApple) {
+      if (piece) {
+        if (piece[0] === goldenApple[0] && piece[1] === goldenApple[1]) return true;
+        return false;
+      }
     }
+    if (piece) {
+      if (piece[0] * SCALE >= CANVAS_SIZE[0] || piece[0] < 0 || piece[1] * SCALE >= CANVAS_SIZE[1] || piece[1] < 0)
+        return true;
 
-    return false;
+      for (const segment of snk) {
+        if (piece[0] === segment[0] && piece[1] === segment[1]) return true;
+      }
+
+      return false;
+    }
   };
 
   const checkAppleCollision = (newSnake: typeof snake) => {
+    if (JSON.stringify(specialApple) !== JSON.stringify([null, null])) {
+      if (newSnake[0][0] === specialApple[0] && newSnake[0][1] === specialApple[1]) {
+        setHasSpecialApple(true);
+        eatFood.play();
+        setSpecialApple([null, null]);
+        specialAppleInterval = setInterval(() => setSpecialAppleCountdown(prevState => prevState - 1), 1000);
+        if (!showArrows) {
+          canvasAnimation.start({
+            x: [2, -2, 0],
+            transition: {
+              duration: 0.2,
+            },
+          });
+        }
+      }
+    }
     if (newSnake[0][0] === apple[0] && newSnake[0][1] === apple[1]) {
       setScore(prevState => prevState + 1);
       eatFood.play();
@@ -161,8 +201,31 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
         return prevState;
       });
       let newApple = createApple();
-      while (checkCollision(newApple, newSnake)) {
-        newApple = createApple();
+      let newSpecialApple = null;
+
+      if (!hasSpecialApple) {
+        const chance = Math.random();
+
+        if (chance < 0.3) {
+          newSpecialApple = createSpecialApple();
+        }
+      }
+
+      if (newSpecialApple) {
+        while (checkCollision(newApple, newSnake) && checkCollision(newApple, undefined, newSpecialApple)) {
+          newApple = createApple();
+        }
+      } else {
+        while (checkCollision(newApple, newSnake)) {
+          newApple = createApple();
+        }
+      }
+
+      if (newSpecialApple) {
+        while (checkCollision(newSpecialApple, newSnake) && checkCollision(newApple, undefined, newSpecialApple)) {
+          newSpecialApple = createSpecialApple();
+        }
+        setSpecialApple(newSpecialApple);
       }
       setApple(newApple);
       return true;
@@ -212,12 +275,30 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
     const snakeCopy = [...snake];
     const newSnakeHead = [snakeCopy[0][0] + direction[0], snakeCopy[0][1] + direction[1]];
     snakeCopy.unshift(newSnakeHead);
-    if (checkCollision(newSnakeHead)) endGame();
+    if (!hasSpecialApple) if (checkCollision(newSnakeHead)) endGame();
+    if (hasSpecialApple) {
+      if (newSnakeHead[0] * SCALE >= CANVAS_SIZE[0]) newSnakeHead[0] = 0;
+
+      if (newSnakeHead[0] < 0) newSnakeHead[0] = CANVAS_SIZE[0] / SCALE - 1;
+
+      if (newSnakeHead[1] * SCALE >= CANVAS_SIZE[1]) newSnakeHead[1] = 0;
+
+      if (newSnakeHead[1] < 0) newSnakeHead[1] = CANVAS_SIZE[1] / SCALE - 1;
+    }
     if (!checkAppleCollision(snakeCopy)) snakeCopy.pop();
     setSnake(snakeCopy);
   };
 
   useInterval(() => update(), speed);
+
+  useEffect(() => {
+    if (specialAppleCountdown < 0) {
+      clearInterval(specialAppleInterval);
+      if (specialAppleCountdownRef.current) specialAppleCountdownRef.current.style.display = 'none';
+      setSpecialAppleCountdown(10);
+      setHasSpecialApple(false);
+    }
+  }, [specialAppleCountdown]);
 
   useEffect(() => {
     if (countdown <= 0) {
@@ -238,16 +319,30 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
     const context = canvasRef.current?.getContext('2d');
 
     if (context) {
+      context.globalCompositeOperation = 'destination-over';
       context.setTransform(SCALE, 0, 0, SCALE, 0, 0);
       context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      context.fillStyle = 'rgb(209, 213, 219)';
-      snake.forEach(([x, y], i) => {
-        if (i === 0) return context.drawImage(snakeHead, x, y, 1, 1);
-        context.drawImage(snakeTail, x, y, 1, 1);
-      });
+      if (hasSpecialApple) {
+        snake.forEach(([x, y], i) => {
+          if (i === 0) return context.drawImage(goldenSnakeHead, x, y, 1, 1);
+          context.drawImage(goldenSnakeTail, x, y, 1, 1);
+        });
+      } else {
+        snake.forEach(([x, y], i) => {
+          if (i === 0) return context.drawImage(snakeHead, x, y, 1, 1);
+          context.drawImage(snakeTail, x, y, 1, 1);
+        });
+      }
       context.drawImage(appleIcon, apple[0], apple[1], 1, 1);
+      if (JSON.stringify(specialApple) !== JSON.stringify([null, null]))
+        context.drawImage(goldenAppleIcon, specialApple[0] as number, specialApple[1] as number, 1, 1);
     }
-  }, [snake, apple]);
+  }, [snake, apple, hasSpecialApple, specialApple]);
+
+  useEffect(() => {
+    if (hasSpecialApple) document.body.className = 'rainbow font-sans';
+    else document.body.className = 'bg-secondary font-sans';
+  }, [hasSpecialApple]);
 
   return (
     <div className="flex flex-col h-screen items-center relative">
@@ -298,6 +393,15 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
       >
         {countdown}
       </motion.div>
+      {hasSpecialApple && (
+        <div
+          className="absolute top-5 left-5 bg-primary text-gray-300 p-3 text-3xl rounded-md"
+          ref={specialAppleCountdownRef}
+        >
+          {specialAppleCountdown}
+        </div>
+      )}
+
       <div className="flex flex-col items-center py-3">
         <h3 className="text-gray-300 text-4xl">Score</h3>
         <h4 className="text-gray-300 text-3xl">{score}</h4>

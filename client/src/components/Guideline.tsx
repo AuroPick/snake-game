@@ -10,6 +10,7 @@ import { motion, AnimationControls } from 'framer-motion';
 import snake from '../animations/snake.json';
 import speedBoost from '../animations/speedBoost.json';
 import { ReactComponent as Spacebar } from '../assets/icons/space-bar.svg';
+import mutation from '../animations/mutation.json';
 
 interface GuidelineProps {
   onClick: React.MouseEventHandler<HTMLButtonElement>;
@@ -21,7 +22,6 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController })
 
   const defaultOptions = {
     loop: true,
-    autoplay: false,
     animationData: snake,
     rendererSettings: {
       preserveAspectRatio: 'xMidYMid slice',
@@ -30,8 +30,12 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController })
 
   const speedBoostOptions = {
     loop: true,
-    autoplay: false,
     animationData: speedBoost,
+  };
+
+  const mutationOptions = {
+    loop: true,
+    animationData: mutation,
   };
 
   useEffect(() => {
@@ -41,8 +45,8 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController })
   return (
     <>
       <h3 className="text-3xl lg:text-5xl text-gray-300 font-bold">How To Play</h3>
-      <div className="flex flex-wrap justify-center lg:justify-between w-full my-32">
-        <div className="flex flex-col items-center w-52 mx-5">
+      <div className="flex flex-wrap justify-center xl:justify-between w-full mb-32 -mt-8">
+        <div className="flex flex-col items-center w-52 mx-5 mt-32">
           {/*
             // @ts-ignore */}
           <Lottie
@@ -55,7 +59,7 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController })
           <ArrowNarrowLeftIcon className="h-16 text-gray-400" />
           <p className="text-center text-gray-200 mt-3">Press left arrow key to turn left</p>
         </div>
-        <div className="flex flex-col items-center w-52 mx-5">
+        <div className="flex flex-col items-center w-52 mx-5 mt-32">
           {/*
             // @ts-ignore */}
           <Lottie
@@ -68,7 +72,7 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController })
           <ArrowNarrowDownIcon className="h-16 text-gray-400" />
           <p className="text-center text-gray-200 mt-3">Press down arrow key to turn down</p>
         </div>
-        <div className="flex flex-col items-center w-52 mx-5">
+        <div className="flex flex-col items-center w-52 mx-5 mt-32">
           {/*
             // @ts-ignore */}
           <Lottie
@@ -81,7 +85,7 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController })
           <ArrowNarrowUpIcon className="h-16 text-gray-400" />
           <p className="text-center text-gray-200 mt-3">Press up arrow key to turn up</p>
         </div>
-        <div className="flex flex-col items-center w-52 mx-5">
+        <div className="flex flex-col items-center w-52 mx-5 mt-32">
           <Lottie
             width={200}
             className="w-8"
@@ -92,10 +96,15 @@ export const Guideline: React.FC<GuidelineProps> = ({ onClick, animController })
           <ArrowNarrowRightIcon className="h-16 text-gray-400" />
           <p className="text-center text-gray-200 mt-3">Press right arrow key to turn right</p>
         </div>
-        <div className="flex flex-col items-center w-52 mx-5">
+        <div className="flex flex-col items-center w-52 mx-5 mt-32">
           <Lottie width={100} options={speedBoostOptions} style={{ marginLeft: '2.8rem' }} />
-          <Spacebar width={100} style={{ color: 'rgb(156, 163, 175)' }} />
+          <Spacebar width={80} style={{ color: 'rgb(156, 163, 175)' }} />
           <p className="text-center text-gray-200 mt-3">Hold down spacebar to increase speed</p>
+        </div>
+        <div className="flex flex-col items-center w-52 mx-5 mt-32">
+          <Lottie width={100} className="w-8" options={mutationOptions} />
+          <p className="font-semibold text-2xl text-gray-400">Mutation</p>
+          <p className="text-center text-gray-200 mt-3">Eat golden apple to disable all collisions</p>
         </div>
       </div>
       <motion.button
