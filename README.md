@@ -6,7 +6,7 @@
 	<p><b>Snake game with react and smooth animations</b></p>
 </div>
 </br>
-<a href="https://aykut-snake-game.vercel.app"><img src="https://user-images.githubusercontent.com/53499802/126382212-1ee8d46f-d76c-47e4-9291-f0e51f86c518.gif" /></a>
+<a href="https://aykut-snake-game.vercel.app"><video autoplay src="https://user-images.githubusercontent.com/53499802/127186133-b21dca83-7c41-4722-a937-2f07393b57e3.mp4" /></a>
 
 ## Features
 :heavy_check_mark: Moving with arrow keys  
@@ -32,6 +32,11 @@
 ## Installation
 
 1. Install [NodeJS](https://nodejs.org/en/)
+
+2. Install Yarn
+  ```bash
+  npm install --global yarn
+  ```
 
 2. [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) this repo or [download](https://github.com/AuroPick/snake-game/archive/refs/heads/main.zip) it
 
