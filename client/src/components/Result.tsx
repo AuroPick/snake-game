@@ -23,6 +23,16 @@ export const Result: React.FC<ResultProps> = ({ score, animController, onClick }
 
   const { addToast } = useToasts();
 
+  const checkUsername = (checkingUsername: string | null) => {
+    if (checkingUsername) {
+      const isOk = /^[a-zA-Z0-9]([._-](?![._-])|[a-zA-Z0-9]){3,18}[a-zA-Z0-9]$/.test(checkingUsername);
+
+      return isOk;
+    }
+
+    return false;
+  };
+
   const getLeaderboard = async () => {
     try {
       const { data } = await get();
@@ -35,6 +45,19 @@ export const Result: React.FC<ResultProps> = ({ score, animController, onClick }
 
   const postLeaderboard = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const isOk = checkUsername(username);
+    if (!isOk)
+      return addToast(
+        <span>
+          - Username consists of alphanumeric characters (a-zA-Z0-9), lowercase, or uppercase.
+          <br />
+          <br />- Must be between 5 and 20 characters long.
+          <br />
+          <br />- The dot (.), underscore (_), or hyphen (-) must not be the first or last character.
+        </span>,
+        { appearance: 'error' }
+      );
     const sendData = {
       username: username || 'anon',
       score,
