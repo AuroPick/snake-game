@@ -15,7 +15,9 @@
 :heavy_check_mark: Save the score  
 :heavy_check_mark: See the leaderboard  
 :heavy_check_mark: Animations  
-:heavy_check_mark: Sounds 
+:heavy_check_mark: Sounds  
+:heavy_check_mark: Buttons for mobile  
+:heavy_check_mark: Mutation skill: Eat golden apple to disable all collisions 
 
 ## Stack
 - Typescript [:link:](https://www.typescriptlang.org)
@@ -31,7 +33,7 @@
 
 1. Install [NodeJS](https://nodejs.org/en/)
 
-2. [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) this repo or [download](https://github.com/AuroPick/snake-game/archive/master.zip) it
+2. [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) this repo or [download](https://github.com/AuroPick/snake-game/archive/refs/heads/main.zip) it
 
 3. Use .env.example files to create .env files
 
