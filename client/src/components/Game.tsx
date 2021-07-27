@@ -131,21 +131,25 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
   };
 
   const speedBoost = (e: React.KeyboardEvent<HTMLCanvasElement>) => {
-    if (e.type === 'keydown') {
-      setSpeed(prevState => prevState && prevState / 2);
-      setIsBoosting(true);
-      boost.play();
-      if (!hasSpecialApple) document.body.className = 'bg-green-700 font-sans';
+    if (!isBoosting) {
+      if (e.type === 'keydown') {
+        setSpeed(prevState => prevState && prevState / 2);
+        setIsBoosting(true);
+        boost.play();
+        if (!hasSpecialApple) document.body.className = 'bg-green-700 font-sans';
+      }
     }
-    if (e.type === 'keyup') {
-      setSpeed(prevState => {
-        if (prevState && prevState >= 100) return 100;
-        return prevState && prevState * 2;
-      });
-      setIsBoosting(false);
-      boost.pause();
-      boost.currentTime = 0;
-      if (!hasSpecialApple) document.body.className = 'bg-secondary font-sans';
+    if (isBoosting) {
+      if (e.type === 'keyup') {
+        setSpeed(prevState => {
+          if (prevState && prevState >= 100) return 100;
+          return prevState && prevState * 2;
+        });
+        setIsBoosting(false);
+        boost.pause();
+        boost.currentTime = 0;
+        if (!hasSpecialApple) document.body.className = 'bg-secondary font-sans';
+      }
     }
   };
 
