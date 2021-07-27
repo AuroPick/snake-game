@@ -6,6 +6,7 @@ import GameOver from '../assets/sounds/gameOver.mp3';
 import Jump from '../assets/sounds/jump.mp3';
 import ThemeMusic from '../assets/sounds/themeMusic.mp3';
 import Boost from '../assets/sounds/boost.mp3';
+import Ding from '../assets/sounds/ding.mp3';
 
 interface GameProps {
   onGameEnd: (score: number) => void;
@@ -16,6 +17,7 @@ const gameOver = new Audio(GameOver);
 const jump = new Audio(Jump);
 const themeMusic = new Audio(ThemeMusic);
 const boost = new Audio(Boost);
+const ding = new Audio(Ding);
 
 themeMusic.loop = true;
 themeMusic.volume = 0.15;
@@ -292,6 +294,7 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
   useInterval(() => update(), speed);
 
   useEffect(() => {
+    if (specialAppleCountdown === 0) ding.play();
     if (specialAppleCountdown < 0) {
       clearInterval(specialAppleInterval);
       if (specialAppleCountdownRef.current) specialAppleCountdownRef.current.style.display = 'none';
@@ -340,9 +343,11 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
   }, [snake, apple, hasSpecialApple, specialApple]);
 
   useEffect(() => {
-    if (hasSpecialApple) document.body.className = 'rainbow font-sans';
+    if (hasSpecialApple && isBoosting) document.body.className = 'rainbow font-sans';
+    else if (hasSpecialApple) document.body.className = 'bg-yellow-600 font-sans';
+    else if (isBoosting) document.body.className = 'bg-green-700 font-sans';
     else document.body.className = 'bg-secondary font-sans';
-  }, [hasSpecialApple]);
+  }, [hasSpecialApple, isBoosting]);
 
   return (
     <div className="flex flex-col h-screen items-center relative">
