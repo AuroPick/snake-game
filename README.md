@@ -33,6 +33,11 @@
 
 1. Install [NodeJS](https://nodejs.org/en/)
 
+2. Install Yarn
+  ```bash
+  npm install --global yarn
+  ```
+
 2. [Clone](https://help.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) this repo or [download](https://github.com/AuroPick/snake-game/archive/refs/heads/main.zip) it
 
 3. Use .env.example files to create .env files
