@@ -1,5 +1,5 @@
 import { motion, useAnimation } from 'framer-motion';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { useInterval } from '../hooks';
 import EatFood from '../assets/sounds/eatFood.mp3';
 import GameOver from '../assets/sounds/gameOver.mp3';
@@ -89,6 +89,7 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
   const [hasSpecialApple, setHasSpecialApple] = useState(false);
   const [specialApple, setSpecialApple] = useState<number[] | null[]>([null, null]);
   const [lastSpeed, setLastSpeed] = useState(0);
+  const [render, setRender] = useState({ renderTime: 0, prevRenderTime: 0 });
 
   const canvasAnimation = useAnimation();
   const cardAnimation = useAnimation();
@@ -100,39 +101,63 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
   const createApple = () => apple.map((_a, i) => Math.floor(Math.random() * (CANVAS_SIZE[i] / SCALE)));
 
   const createSpecialApple = () => specialApple.map((_a, i) => Math.floor(Math.random() * (CANVAS_SIZE[i] / SCALE)));
+  console.log(render);
 
   const moveSnake = ({ code }: { code: string }) => {
-    if (
-      code === 'ArrowLeft' &&
-      JSON.stringify(direction) != JSON.stringify([1, 0]) &&
-      JSON.stringify(direction) != JSON.stringify([-1, 0])
-    ) {
-      jump.play();
-      setDirection([-1, 0]);
-    }
-    if (
-      code === 'ArrowUp' &&
-      JSON.stringify(direction) != JSON.stringify([0, 1]) &&
-      JSON.stringify(direction) != JSON.stringify([0, -1])
-    ) {
-      jump.play();
-      setDirection([0, -1]);
-    }
-    if (
-      code === 'ArrowRight' &&
-      JSON.stringify(direction) != JSON.stringify([-1, 0]) &&
-      JSON.stringify(direction) != JSON.stringify([1, 0])
-    ) {
-      jump.play();
-      setDirection([1, 0]);
-    }
-    if (
-      code === 'ArrowDown' &&
-      JSON.stringify(direction) != JSON.stringify([0, -1]) &&
-      JSON.stringify(direction) != JSON.stringify([0, 1])
-    ) {
-      jump.play();
-      setDirection([0, 1]);
+    if (render.prevRenderTime !== render.renderTime) {
+      if (code === 'ArrowLeft') {
+        setDirection(prevState => {
+          console.log(prevState);
+          if (
+            JSON.stringify(prevState) != JSON.stringify([1, 0]) &&
+            JSON.stringify(prevState) != JSON.stringify([-1, 0])
+          ) {
+            jump.play();
+            return [-1, 0];
+          }
+          return prevState;
+        });
+      }
+      if (code === 'ArrowUp') {
+        setDirection(prevState => {
+          console.log(prevState);
+          if (
+            JSON.stringify(prevState) != JSON.stringify([0, 1]) &&
+            JSON.stringify(prevState) != JSON.stringify([0, -1])
+          ) {
+            jump.play();
+            return [0, -1];
+          }
+          return prevState;
+        });
+      }
+      if (code === 'ArrowRight') {
+        setDirection(prevState => {
+          console.log(prevState);
+          if (
+            JSON.stringify(prevState) != JSON.stringify([-1, 0]) &&
+            JSON.stringify(prevState) != JSON.stringify([1, 0])
+          ) {
+            jump.play();
+            return [1, 0];
+          }
+          return prevState;
+        });
+      }
+      if (code === 'ArrowDown') {
+        setDirection(prevState => {
+          console.log(prevState);
+          if (
+            JSON.stringify(prevState) != JSON.stringify([0, -1]) &&
+            JSON.stringify(prevState) != JSON.stringify([0, 1])
+          ) {
+            jump.play();
+            return [0, 1];
+          }
+          return prevState;
+        });
+      }
+      setRender(prevState => ({ ...prevState, prevRenderTime: prevState.renderTime }));
     }
   };
 
@@ -348,10 +373,11 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
     startCountdown();
   }, []);
 
-  useEffect(() => {
+  const draw = useCallback(() => {
     const context = canvasRef.current?.getContext('2d');
 
     if (context) {
+      console.log('xd');
       context.globalCompositeOperation = 'destination-over';
       context.setTransform(SCALE, 0, 0, SCALE, 0, 0);
       context.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -369,8 +395,13 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
       context.drawImage(appleIcon, apple[0], apple[1], 1, 1);
       if (JSON.stringify(specialApple) !== JSON.stringify([null, null]))
         context.drawImage(goldenAppleIcon, specialApple[0] as number, specialApple[1] as number, 1, 1);
+      setRender(prevState => ({ ...prevState, renderTime: prevState.renderTime + 1 }));
     }
-  }, [snake, apple, hasSpecialApple, specialApple]);
+  }, [apple, hasSpecialApple, snake, specialApple]);
+
+  useEffect(() => {
+    draw();
+  }, [draw]);
 
   useEffect(() => {
     if (hasSpecialApple && isBoosting) document.body.className = 'rainbow font-sans';
