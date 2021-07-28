@@ -41,26 +41,26 @@ export const MutationGuide: React.FC<MutationGuideProps> = ({ onClose }) => {
       </div>
       <div className="flex mt-8 justify-center lg:justify-between flex-wrap ">
         {isLoading.video1 && (
-          <div className=" flex justify-center items-center m-5">
+          <div className=" flex justify-center items-center m-5 mx-32">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary" />
           </div>
         )}
         <video
           autoPlay
           loop
-          className="w-60 lg:w-96 m-5"
+          className={`w-60 lg:w-96 m-5 ${isLoading.video1 && 'hidden'}`}
           src={throughWall}
           onCanPlay={() => setIsLoading(prevState => ({ ...prevState, video1: false }))}
         />
         {isLoading.video2 && (
-          <div className=" flex justify-center items-center m-5">
+          <div className=" flex justify-center items-center m-5 mx-32">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary" />
           </div>
         )}
         <video
           autoPlay
           loop
-          className="w-60 lg:w-96 m-5"
+          className={`w-60 lg:w-96 m-5 ${isLoading.video2 && 'hidden'}`}
           src={throughYourself}
           onCanPlay={() => setIsLoading(prevState => ({ ...prevState, video2: false }))}
         />
