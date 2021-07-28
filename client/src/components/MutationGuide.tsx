@@ -38,8 +38,8 @@ export const MutationGuide: React.FC<MutationGuideProps> = ({ onClose }) => {
         <p className="text-gray-400 text-md mt-2">Now you can do these for 10 seconds</p>
       </div>
       <div className="flex mt-8 justify-center lg:justify-between flex-wrap ">
-        <video autoPlay loop className="w-60 lg:w-96 m-5" src={throughWall} />
-        <video autoPlay loop className="w-60 lg:w-96 m-5" src={throughYourself} />
+        <video preload="auto" autoPlay loop className="w-60 lg:w-96 m-5" src={throughWall} />
+        <video preload="auto" autoPlay loop className="w-60 lg:w-96 m-5" src={throughYourself} />
       </div>
     </>
   );
