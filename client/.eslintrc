@@ -57,7 +57,9 @@
     "no-underscore-dangle": "off",
     "jsx-a11y/click-events-have-key-events": "off",
     "jsx-a11y/interactive-supports-focus": "off",
-    "prefer-destructuring": "off"
+    "prefer-destructuring": "off",
+    "jsx-a11y/media-has-caption": "off",
+    "jsx-a11y/control-has-associated-label": "off"
   },
   "settings": {
     "react": {

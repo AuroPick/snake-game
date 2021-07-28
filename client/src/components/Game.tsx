@@ -7,9 +7,13 @@ import Jump from '../assets/sounds/jump.mp3';
 import ThemeMusic from '../assets/sounds/themeMusic.mp3';
 import Boost from '../assets/sounds/boost.mp3';
 import Ding from '../assets/sounds/ding.mp3';
+import { Card } from './Card';
+import { MutationGuide } from './MutationGuide';
 
 interface GameProps {
   onGameEnd: (score: number) => void;
+  isFirstSpecialApple: { isFirst: boolean; showCard: boolean };
+  setIsFirstSpecialApple: React.Dispatch<React.SetStateAction<{ isFirst: boolean; showCard: boolean }>>;
 }
 
 const eatFood = new Audio(EatFood);
@@ -71,7 +75,7 @@ snakeTail.src = 'https://i.hizliresim.com/7zrgugd.png';
 const goldenSnakeTail = new Image();
 goldenSnakeTail.src = 'https://i.hizliresim.com/f4q0gr3.png';
 
-export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
+export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setIsFirstSpecialApple }) => {
   const [countdown, setCountdown] = useState(3);
   const [specialAppleCountdown, setSpecialAppleCountdown] = useState(10);
   const [score, setScore] = useState(0);
@@ -84,8 +88,10 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
   const [showArrows, setShowArrows] = useState(false);
   const [hasSpecialApple, setHasSpecialApple] = useState(false);
   const [specialApple, setSpecialApple] = useState<number[] | null[]>([null, null]);
+  const [lastSpeed, setLastSpeed] = useState(0);
 
   const canvasAnimation = useAnimation();
+  const cardAnimation = useAnimation();
 
   const counterRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -172,13 +178,24 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
     }
   };
 
+  const continueGame = () => {
+    setIsFirstSpecialApple(prevState => ({ ...prevState, showCard: false }));
+    canvasRef.current?.focus();
+    if (isBoosting) {
+      setIsBoosting(false);
+      setSpeed(lastSpeed * 2);
+    } else setSpeed(lastSpeed);
+    specialAppleInterval = setInterval(() => setSpecialAppleCountdown(prevState => prevState - 1), 1000);
+  };
+
   const checkAppleCollision = (newSnake: typeof snake) => {
     if (JSON.stringify(specialApple) !== JSON.stringify([null, null])) {
       if (newSnake[0][0] === specialApple[0] && newSnake[0][1] === specialApple[1]) {
         setHasSpecialApple(true);
         eatFood.play();
         setSpecialApple([null, null]);
-        specialAppleInterval = setInterval(() => setSpecialAppleCountdown(prevState => prevState - 1), 1000);
+        if (!isFirstSpecialApple.isFirst)
+          specialAppleInterval = setInterval(() => setSpecialAppleCountdown(prevState => prevState - 1), 1000);
         if (!showArrows) {
           canvasAnimation.start({
             x: [2, -2, 0],
@@ -186,6 +203,15 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
               duration: 0.2,
             },
           });
+        }
+        if (isFirstSpecialApple.isFirst) {
+          setLastSpeed(speed as number);
+          setSpeed(null);
+          setIsFirstSpecialApple({ isFirst: false, showCard: true });
+          canvasRef.current?.blur();
+          if (isBoosting) {
+            boost.pause();
+          }
         }
       }
     }
@@ -410,7 +436,17 @@ export const Game: React.FC<GameProps> = ({ onGameEnd }) => {
           {specialAppleCountdown}
         </div>
       )}
-
+      {isFirstSpecialApple.showCard && (
+        <div className="absolute flex justify-center items-center w-screen lg:h-screen">
+          <Card
+            className="relative p-6 m-5 mt-5 flex bg-secondary rounded-xl shadow-md justify-between flex-col items-center"
+            animController={cardAnimation}
+            scaleAnimation
+          >
+            <MutationGuide onClose={continueGame} />
+          </Card>
+        </div>
+      )}
       <div className="flex flex-col items-center py-3">
         <h3 className="text-gray-300 text-4xl">Score</h3>
         <h4 className="text-gray-300 text-3xl">{score}</h4>

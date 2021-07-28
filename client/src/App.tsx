@@ -9,6 +9,7 @@ export const App: React.FC = () => {
   const [showStartCard, setShowStartCard] = useState(true);
   const [showResultCard, setShowResultCard] = useState(false);
   const [finalScore, setFinalScore] = useState(0);
+  const [isFirstSpecialApple, setISFirstSpecialApple] = useState({ isFirst: true, showCard: false });
 
   useEffect(() => {
     getLeaderboard();
@@ -54,5 +55,11 @@ export const App: React.FC = () => {
     );
   }
 
-  return <Game onGameEnd={onGameEnd} />;
+  return (
+    <Game
+      onGameEnd={onGameEnd}
+      isFirstSpecialApple={isFirstSpecialApple}
+      setIsFirstSpecialApple={setISFirstSpecialApple}
+    />
+  );
 };
