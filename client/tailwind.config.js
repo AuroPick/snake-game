@@ -12,6 +12,10 @@ module.exports = {
       primary: '#151a21',
       secondary: '#0b0e11',
     }),
+    borderColor: theme => ({
+      ...theme('colors'),
+      primary: '#151a21',
+    }),
   },
   variants: {
     extend: {},

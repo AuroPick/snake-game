@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Lottie from 'react-lottie-segments';
 import mutation from '../animations/mutation.json';
 import throughWall from '../assets/videos/throughWall.mp4';
@@ -9,6 +9,8 @@ interface MutationGuideProps {
 }
 
 export const MutationGuide: React.FC<MutationGuideProps> = ({ onClose }) => {
+  const [isLoading, setIsLoading] = useState({ video1: true, video2: true });
+
   return (
     <>
       <div onClick={onClose} className="absolute top-5 right-5" role="button">
@@ -38,8 +40,30 @@ export const MutationGuide: React.FC<MutationGuideProps> = ({ onClose }) => {
         <p className="text-gray-400 text-md mt-2">Now you can do these for 10 seconds</p>
       </div>
       <div className="flex mt-8 justify-center lg:justify-between flex-wrap ">
-        <video preload="auto" autoPlay loop className="w-60 lg:w-96 m-5" src={throughWall} />
-        <video preload="auto" autoPlay loop className="w-60 lg:w-96 m-5" src={throughYourself} />
+        {isLoading.video1 && (
+          <div className=" flex justify-center items-center m-5 mx-48">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary" />
+          </div>
+        )}
+        <video
+          autoPlay
+          loop
+          className="w-60 lg:w-96 m-5"
+          src={throughWall}
+          onCanPlay={() => setIsLoading(prevState => ({ ...prevState, video1: false }))}
+        />
+        {isLoading.video2 && (
+          <div className=" flex justify-center items-center m-5 mx-48">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary" />
+          </div>
+        )}
+        <video
+          autoPlay
+          loop
+          className="w-60 lg:w-96 m-5"
+          src={throughYourself}
+          onCanPlay={() => setIsLoading(prevState => ({ ...prevState, video2: false }))}
+        />
       </div>
     </>
   );
