@@ -31,31 +31,12 @@ boost.loop = true;
 let interval: NodeJS.Timeout;
 let specialAppleInterval: NodeJS.Timeout;
 
-const CANVAS_SIZE =
-  window.innerWidth > 1919 && window.innerHeight > 900
-    ? [1600, 800]
-    : window.innerWidth > 1536 && window.innerHeight > 864
-    ? [1500, 720]
-    : window.innerWidth > 1279 && window.innerHeight > 719
-    ? [1200, 600]
-    : window.innerWidth > 767 && window.innerHeight > 431
-    ? [690, 390]
-    : [window.innerWidth - 50, window.innerHeight - 200];
 const SNAKE_START = [
   [9, 8],
   [8, 8],
 ];
+
 const APPLE_START = [10, 20];
-const SCALE =
-  window.innerWidth > 1919 && window.innerHeight > 900
-    ? 25
-    : window.innerWidth > 1536 && window.innerHeight > 864
-    ? 22
-    : window.innerWidth > 1279 && window.innerHeight > 719
-    ? 20
-    : window.innerWidth > 767 && window.innerHeight > 431
-    ? 15
-    : 10;
 
 const appleIcon = new Image();
 appleIcon.src = 'https://cdn.gamedevmarket.net/wp-content/uploads/20200305090324/b89792347c16340b1d1fffcac31f850b.png';
@@ -94,6 +75,29 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
   const canvasAnimation = useAnimation();
   const cardAnimation = useAnimation();
 
+  // eslint-disable-next-line
+  const CANVAS_SIZE =
+    window.innerWidth > 1919 && window.innerHeight > 900
+      ? [1600, 800]
+      : window.innerWidth > 1536 && window.innerHeight > 864
+      ? [1500, 750]
+      : window.innerWidth > 1279 && window.innerHeight > 719
+      ? [1200, 600]
+      : window.innerWidth > 767 && window.innerHeight > 431
+      ? [684, 342]
+      : [307.8, 153.9];
+
+  const SCALE =
+    window.innerWidth > 1919 && window.innerHeight > 900
+      ? 25
+      : window.innerWidth > 1536 && window.innerHeight > 864
+      ? 23.4375
+      : window.innerWidth > 1279 && window.innerHeight > 719
+      ? 18.75
+      : window.innerWidth > 767 && window.innerHeight > 431
+      ? 10.6875
+      : 4.809375;
+
   const counterRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const specialAppleCountdownRef = useRef<HTMLDivElement>(null);
@@ -101,13 +105,11 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
   const createApple = () => apple.map((_a, i) => Math.floor(Math.random() * (CANVAS_SIZE[i] / SCALE)));
 
   const createSpecialApple = () => specialApple.map((_a, i) => Math.floor(Math.random() * (CANVAS_SIZE[i] / SCALE)));
-  console.log(render);
 
   const moveSnake = ({ code }: { code: string }) => {
     if (render.prevRenderTime !== render.renderTime) {
       if (code === 'ArrowLeft') {
         setDirection(prevState => {
-          console.log(prevState);
           if (
             JSON.stringify(prevState) != JSON.stringify([1, 0]) &&
             JSON.stringify(prevState) != JSON.stringify([-1, 0])
@@ -120,7 +122,6 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
       }
       if (code === 'ArrowUp') {
         setDirection(prevState => {
-          console.log(prevState);
           if (
             JSON.stringify(prevState) != JSON.stringify([0, 1]) &&
             JSON.stringify(prevState) != JSON.stringify([0, -1])
@@ -133,7 +134,6 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
       }
       if (code === 'ArrowRight') {
         setDirection(prevState => {
-          console.log(prevState);
           if (
             JSON.stringify(prevState) != JSON.stringify([-1, 0]) &&
             JSON.stringify(prevState) != JSON.stringify([1, 0])
@@ -146,7 +146,6 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
       }
       if (code === 'ArrowDown') {
         setDirection(prevState => {
-          console.log(prevState);
           if (
             JSON.stringify(prevState) != JSON.stringify([0, -1]) &&
             JSON.stringify(prevState) != JSON.stringify([0, 1])
@@ -377,7 +376,6 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
     const context = canvasRef.current?.getContext('2d');
 
     if (context) {
-      console.log('xd');
       context.globalCompositeOperation = 'destination-over';
       context.setTransform(SCALE, 0, 0, SCALE, 0, 0);
       context.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -397,7 +395,12 @@ export const Game: React.FC<GameProps> = ({ onGameEnd, isFirstSpecialApple, setI
         context.drawImage(goldenAppleIcon, specialApple[0] as number, specialApple[1] as number, 1, 1);
       setRender(prevState => ({ ...prevState, renderTime: prevState.renderTime + 1 }));
     }
-  }, [apple, hasSpecialApple, snake, specialApple]);
+  }, [apple, hasSpecialApple, snake, specialApple, SCALE]);
+
+  useEffect(() => {
+    if (window.innerWidth < 768) return setShowArrows(true);
+    return setShowArrows(false);
+  }, [CANVAS_SIZE]);
 
   useEffect(() => {
     draw();
